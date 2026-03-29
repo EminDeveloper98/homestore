@@ -1,449 +1,2324 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="az">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BorcTracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f8f9fc;
-  --surface:#ffffff;
-  --surface2:#f2f4f8;
-  --border:#e3e7f0;
-  --border2:#cdd3e3;
-  --rose:#e53935;--rose-s:#fff0f0;--rose-m:rgba(229,57,53,0.15);
-  --teal:#0d7f6e;--teal-s:#edf7f5;--teal-m:rgba(13,127,110,0.15);
-  --violet:#5c35d9;--violet-s:#f2efff;--violet-m:rgba(92,53,217,0.15);
-  --orange:#d06b00;--orange-s:#fff8ee;--orange-m:rgba(208,107,0,0.15);
-  --text:#111827;--text2:#4b5563;--text3:#9ca3af;
-  --sh:0 1px 3px rgba(0,0,0,0.06),0 4px 20px rgba(0,0,0,0.05);
-  --sh-sm:0 1px 3px rgba(0,0,0,0.05);
-  --sh-md:0 8px 30px rgba(0,0,0,0.1);
-}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BorcTracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #f8f9fc;
+        --surface: #fff;
+        --surface2: #f2f4f8;
+        --border: #e3e7f0;
+        --border2: #cdd3e3;
+        --rose: #e53935;
+        --rose-s: #fff0f0;
+        --rose-m: rgba(229, 57, 53, 0.15);
+        --teal: #0d7f6e;
+        --teal-s: #edf7f5;
+        --teal-m: rgba(13, 127, 110, 0.15);
+        --violet: #5c35d9;
+        --violet-s: #f2efff;
+        --violet-m: rgba(92, 53, 217, 0.15);
+        --orange: #d06b00;
+        --orange-s: #fff8ee;
+        --orange-m: rgba(208, 107, 0, 0.15);
+        --text: #111827;
+        --text2: #4b5563;
+        --text3: #9ca3af;
+        --sh: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 20px rgba(0, 0, 0, 0.05);
+        --sh-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --sh-md: 0 8px 30px rgba(0, 0, 0, 0.1);
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Sora', sans-serif;
+        min-height: 100vh;
+      }
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 4px;
+      }
+      input[type='number'] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+      input[type='number']::-webkit-inner-spin-button,
+      input[type='number']::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
 
-/* no spin, no scroll change */
-input[type=number]{-moz-appearance:textfield;appearance:textfield}
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+      /* SIDEBAR */
+      .sidebar {
+        width: 264px;
+        min-width: 264px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        z-index: 50;
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+      }
+      .sb-top {
+        padding: 24px 20px 18px;
+        border-bottom: 1px solid var(--border);
+      }
+      .logo {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.5px;
+      }
+      .logo em {
+        color: var(--violet);
+        font-style: normal;
+      }
+      .logo-sub {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text3);
+        margin-top: 4px;
+        font-family: 'Space Mono', monospace;
+      }
+      .sb-lbl {
+        font-size: 9px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--text3);
+        padding: 16px 20px 8px;
+        font-family: 'Space Mono', monospace;
+      }
+      .sup-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 4px 10px;
+      }
+      .sup-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 11px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.16s;
+        margin-bottom: 3px;
+        border: 1px solid transparent;
+      }
+      .sup-item:hover {
+        background: var(--surface2);
+        border-color: var(--border);
+      }
+      .sup-item.active {
+        background: var(--violet-s);
+        border-color: rgba(92, 53, 217, 0.2);
+      }
+      .sup-av {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        background: var(--surface2);
+        color: var(--text2);
+        border: 1px solid var(--border);
+        transition: all 0.16s;
+      }
+      .sup-item.active .sup-av {
+        background: var(--violet);
+        color: #fff;
+        border-color: var(--violet);
+        box-shadow: 0 3px 10px rgba(92, 53, 217, 0.3);
+      }
+      .sup-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .sup-name {
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text);
+      }
+      .sup-item.active .sup-name {
+        color: var(--violet);
+      }
+      .sup-net {
+        font-size: 11px;
+        font-family: 'Space Mono', monospace;
+        margin-top: 1px;
+      }
+      .sup-del {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text3);
+        font-size: 12px;
+        padding: 3px 5px;
+        border-radius: 5px;
+        opacity: 0;
+        transition: all 0.14s;
+        flex-shrink: 0;
+      }
+      .sup-item:hover .sup-del {
+        opacity: 1;
+      }
+      .sup-del:hover {
+        color: var(--rose);
+        background: var(--rose-s);
+      }
+      .add-sup {
+        padding: 12px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 7px;
+      }
+      .add-sup input {
+        flex: 1;
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-size: 13px;
+        font-family: 'Sora', sans-serif;
+        color: var(--text);
+        outline: none;
+        transition: all 0.18s;
+      }
+      .add-sup input::placeholder {
+        color: var(--text3);
+      }
+      .add-sup input:focus {
+        border-color: var(--violet);
+        background: #fff;
+        box-shadow: 0 0 0 3px var(--violet-m);
+      }
+      .add-btn {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        background: var(--violet);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 21px;
+        cursor: pointer;
+        transition: all 0.16s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 10px rgba(92, 53, 217, 0.35);
+        line-height: 1;
+      }
+      .add-btn:hover {
+        background: #4a27c0;
+        box-shadow: 0 5px 16px rgba(92, 53, 217, 0.45);
+        transform: translateY(-1px);
+      }
+      .add-btn:active {
+        transform: none;
+      }
 
-.layout{display:flex;min-height:100vh}
+      /* CONTENT */
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        min-width: 0;
+      }
+      .topbar {
+        background: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid var(--border);
+        padding: 0 30px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        backdrop-filter: blur(12px);
+        box-shadow: var(--sh-sm);
+      }
+      .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .topbar-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .pill {
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-weight: 700;
+        transition: all 0.25s;
+        border: 1.5px solid transparent;
+      }
+      .pill.owe {
+        background: var(--rose-s);
+        color: var(--rose);
+        border-color: rgba(229, 57, 53, 0.2);
+      }
+      .pill.clear {
+        background: var(--teal-s);
+        color: var(--teal);
+        border-color: rgba(13, 127, 110, 0.2);
+      }
+      .pill.zero {
+        background: var(--surface2);
+        color: var(--text3);
+        border-color: var(--border);
+      }
 
-/* ── SIDEBAR ── */
-.sidebar{
-  width:264px;min-width:264px;background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  position:sticky;top:0;height:100vh;z-index:50;
-  box-shadow:2px 0 12px rgba(0,0,0,0.04);
-}
-.sb-top{padding:24px 20px 18px;border-bottom:1px solid var(--border)}
-.logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:-0.5px}
-.logo em{color:var(--violet);font-style:normal}
-.logo-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-top:4px;font-family:'Space Mono',monospace}
+      /* filter select in topbar */
+      .month-filter {
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-family: 'Sora', sans-serif;
+        color: var(--text2);
+        outline: none;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: none;
+      }
+      .month-filter:focus {
+        border-color: var(--violet);
+        box-shadow: 0 0 0 3px var(--violet-m);
+      }
 
-.sb-lbl{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);padding:16px 20px 8px;font-family:'Space Mono',monospace}
-.sup-list{flex:1;overflow-y:auto;padding:4px 10px}
+      /* export/print button */
+      .tb-btn {
+        display: none;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        font-family: 'Sora', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        color: var(--text2);
+      }
+      .tb-btn:hover {
+        border-color: var(--violet);
+        color: var(--violet);
+        background: var(--violet-s);
+      }
 
-.sup-item{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:12px;cursor:pointer;transition:all .16s;margin-bottom:3px;border:1px solid transparent}
-.sup-item:hover{background:var(--surface2);border-color:var(--border)}
-.sup-item.active{background:var(--violet-s);border-color:rgba(92,53,217,0.2)}
+      .main {
+        padding: 26px 30px;
+      }
+      .empty-sup {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 62vh;
+        text-align: center;
+        gap: 14px;
+      }
+      .empty-ico {
+        font-size: 52px;
+        opacity: 0.22;
+      }
+      .empty-sup h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text2);
+      }
+      .empty-sup p {
+        font-size: 14px;
+        color: var(--text3);
+        max-width: 270px;
+        line-height: 1.6;
+      }
 
-.sup-av{
-  width:36px;height:36px;border-radius:10px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;
-  background:var(--surface2);color:var(--text2);
-  border:1px solid var(--border);transition:all .16s;
-}
-.sup-item.active .sup-av{background:var(--violet);color:#fff;border-color:var(--violet);box-shadow:0 3px 10px rgba(92,53,217,0.3)}
+      /* SUMMARY */
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 13px;
+        margin-bottom: 26px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 18px 16px;
+        box-shadow: var(--sh-sm);
+        transition: all 0.18s;
+        cursor: default;
+        position: relative;
+        overflow: hidden;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--sh);
+      }
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .card-ico-wrap {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+      }
+      .c-debt .card-ico-wrap {
+        background: var(--rose-s);
+      }
+      .c-paid .card-ico-wrap {
+        background: var(--teal-s);
+      }
+      .c-ret .card-ico-wrap {
+        background: var(--violet-s);
+      }
+      .c-bal .card-ico-wrap {
+        background: var(--orange-s);
+      }
+      .card-trend {
+        font-size: 10px;
+        font-family: 'Space Mono', monospace;
+        padding: 3px 7px;
+        border-radius: 20px;
+        font-weight: 700;
+      }
+      .c-debt .card-trend {
+        background: var(--rose-s);
+        color: var(--rose);
+      }
+      .c-paid .card-trend {
+        background: var(--teal-s);
+        color: var(--teal);
+      }
+      .c-ret .card-trend {
+        background: var(--violet-s);
+        color: var(--violet);
+      }
+      .c-bal .card-trend {
+        background: var(--orange-s);
+        color: var(--orange);
+      }
+      .card-lbl {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--text3);
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-family: 'Space Mono', monospace;
+      }
+      .card-amt {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .c-debt .card-amt {
+        color: var(--rose);
+      }
+      .c-paid .card-amt {
+        color: var(--teal);
+      }
+      .c-ret .card-amt {
+        color: var(--violet);
+      }
+      .c-bal .card-amt {
+        color: var(--orange);
+      }
+      .card-sub {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 5px;
+        font-family: 'Space Mono', monospace;
+      }
+      .card-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: 0 0 16px 16px;
+      }
+      .c-debt .card-bar {
+        background: linear-gradient(90deg, var(--rose), transparent);
+      }
+      .c-paid .card-bar {
+        background: linear-gradient(90deg, var(--teal), transparent);
+      }
+      .c-ret .card-bar {
+        background: linear-gradient(90deg, var(--violet), transparent);
+      }
+      .c-bal .card-bar {
+        background: linear-gradient(90deg, var(--orange), transparent);
+      }
 
-.sup-info{flex:1;min-width:0}
-.sup-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.sup-item.active .sup-name{color:var(--violet)}
-.sup-net{font-size:11px;font-family:'Space Mono',monospace;margin-top:1px}
+      /* COLUMNS */
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 26px;
+      }
+      .col-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 13px;
+        padding-bottom: 11px;
+        border-bottom: 1.5px solid var(--border);
+      }
+      .col-chip {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-family: 'Space Mono', monospace;
+      }
+      .red .col-chip {
+        background: var(--rose-s);
+        color: var(--rose);
+      }
+      .green .col-chip {
+        background: var(--teal-s);
+        color: var(--teal);
+      }
+      .blue .col-chip {
+        background: var(--violet-s);
+        color: var(--violet);
+      }
+      .col-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+      }
 
-.sup-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:3px 5px;border-radius:5px;opacity:0;transition:all .14s;flex-shrink:0}
-.sup-item:hover .sup-del{opacity:1}
-.sup-del:hover{color:var(--rose);background:var(--rose-s)}
+      /* FORM */
+      .form {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 11px;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        box-shadow: var(--sh-sm);
+        transition:
+          border-color 0.18s,
+          box-shadow 0.18s;
+      }
+      .form:focus-within {
+        border-color: rgba(92, 53, 217, 0.3);
+        box-shadow: 0 0 0 4px var(--violet-m);
+      }
+      .field label {
+        display: block;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--text3);
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-family: 'Space Mono', monospace;
+      }
+      input[type='date'],
+      input[type='number'],
+      input[type='text'] {
+        width: 100%;
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        padding: 9px 12px;
+        color: var(--text);
+        font-family: 'Space Mono', monospace;
+        font-size: 13px;
+        outline: none;
+        transition: all 0.18s;
+      }
+      input::placeholder {
+        color: var(--text3);
+      }
+      input:focus {
+        border-color: var(--violet);
+        background: #fff;
+        box-shadow: 0 0 0 3px var(--violet-m);
+      }
+      input[type='date']::-webkit-calendar-picker-indicator {
+        opacity: 0.4;
+        cursor: pointer;
+      }
+      .pay-btns {
+        display: flex;
+        gap: 6px;
+      }
+      .pay-btn {
+        flex: 1;
+        padding: 9px;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        background: var(--surface2);
+        color: var(--text3);
+        font-family: 'Sora', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.16s;
+        text-align: center;
+      }
+      .pay-btn:hover {
+        border-color: rgba(13, 127, 110, 0.3);
+        color: var(--teal);
+        background: var(--teal-s);
+      }
+      .pay-btn.on {
+        background: var(--teal-s);
+        border-color: rgba(13, 127, 110, 0.3);
+        color: var(--teal);
+        font-weight: 600;
+      }
+      .btn {
+        width: 100%;
+        padding: 11px;
+        border: none;
+        border-radius: 10px;
+        font-family: 'Sora', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.16s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      .btn:active {
+        transform: none;
+        filter: brightness(0.95);
+      }
+      .btn-red {
+        background: var(--rose);
+        color: #fff;
+        box-shadow: 0 3px 12px rgba(229, 57, 53, 0.3);
+      }
+      .btn-red:hover {
+        background: #cc2a27;
+        box-shadow: 0 5px 18px rgba(229, 57, 53, 0.4);
+      }
+      .btn-green {
+        background: var(--teal);
+        color: #fff;
+        box-shadow: 0 3px 12px rgba(13, 127, 110, 0.3);
+      }
+      .btn-green:hover {
+        background: #0a6457;
+        box-shadow: 0 5px 18px rgba(13, 127, 110, 0.4);
+      }
+      .btn-blue {
+        background: var(--violet);
+        color: #fff;
+        box-shadow: 0 3px 12px rgba(92, 53, 217, 0.3);
+      }
+      .btn-blue:hover {
+        background: #4a27c0;
+        box-shadow: 0 5px 18px rgba(92, 53, 217, 0.4);
+      }
 
-.add-sup{padding:12px;border-top:1px solid var(--border);display:flex;gap:7px}
-.add-sup input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Sora',sans-serif;color:var(--text);outline:none;transition:all .18s}
-.add-sup input::placeholder{color:var(--text3)}
-.add-sup input:focus{border-color:var(--violet);background:#fff;box-shadow:0 0 0 3px var(--violet-m)}
-.add-btn{width:38px;height:38px;flex-shrink:0;background:var(--violet);color:#fff;border:none;border-radius:10px;font-size:21px;cursor:pointer;transition:all .16s;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(92,53,217,0.35);line-height:1}
-.add-btn:hover{background:#4a27c0;box-shadow:0 5px 16px rgba(92,53,217,0.45);transform:translateY(-1px)}
-.add-btn:active{transform:none}
+      /* MONTH GROUPS */
+      .month-group {
+        margin-bottom: 10px;
+      }
+      .month-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-radius: 9px;
+        cursor: pointer;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        transition: all 0.15s;
+        user-select: none;
+        margin-bottom: 5px;
+      }
+      .month-toggle:hover {
+        background: var(--border);
+        border-color: var(--border2);
+      }
+      .month-toggle-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .month-name {
+        font-size: 12px;
+        font-weight: 700;
+        font-family: 'Space Grotesk', sans-serif;
+        color: var(--text2);
+      }
+      .month-meta {
+        font-size: 11px;
+        font-family: 'Space Mono', monospace;
+        color: var(--text3);
+      }
+      .month-arrow {
+        font-size: 11px;
+        color: var(--text3);
+        transition: transform 0.2s;
+        line-height: 1;
+      }
+      .month-arrow.open {
+        transform: rotate(180deg);
+      }
+      .month-body {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
 
-/* ── CONTENT ── */
-.content{flex:1;overflow-y:auto;min-width:0}
-.topbar{
-  background:rgba(255,255,255,0.9);border-bottom:1px solid var(--border);
-  padding:0 30px;height:60px;display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;z-index:40;
-  backdrop-filter:blur(12px);box-shadow:var(--sh-sm);
-}
-.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;color:var(--text)}
-.pill{font-family:'Space Mono',monospace;font-size:12px;padding:6px 16px;border-radius:100px;font-weight:700;transition:all .25s;border:1.5px solid transparent}
-.pill.owe{background:var(--rose-s);color:var(--rose);border-color:rgba(229,57,53,0.2)}
-.pill.clear{background:var(--teal-s);color:var(--teal);border-color:rgba(13,127,110,0.2)}
-.pill.zero{background:var(--surface2);color:var(--text3);border-color:var(--border)}
+      /* ENTRIES */
+      .entries {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        max-height: 340px;
+        overflow-y: auto;
+        padding-right: 2px;
+      }
+      .entry {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 12px;
+        display: grid;
+        grid-template-columns: 70px 1fr auto auto;
+        align-items: center;
+        gap: 8px;
+        animation: si 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: all 0.14s;
+        box-shadow: var(--sh-sm);
+      }
+      .entry:hover {
+        border-color: var(--border2);
+        transform: translateX(3px);
+        box-shadow: var(--sh);
+      }
+      @keyframes si {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .e-date {
+        font-family: 'Space Mono', monospace;
+        font-size: 10px;
+        color: var(--text3);
+        background: var(--surface2);
+        padding: 3px 6px;
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      .e-note {
+        font-size: 12px;
+        color: var(--text2);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .e-amt {
+        font-family: 'Space Mono', monospace;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .e-amt.red {
+        color: var(--rose);
+      }
+      .e-amt.green {
+        color: var(--teal);
+      }
+      .e-amt.blue {
+        color: var(--violet);
+      }
+      .del-btn {
+        background: none;
+        border: 1.5px solid transparent;
+        color: var(--text3);
+        cursor: pointer;
+        font-size: 11px;
+        padding: 3px 6px;
+        border-radius: 6px;
+        transition: all 0.14s;
+        flex-shrink: 0;
+      }
+      .del-btn:hover {
+        color: var(--rose);
+        background: var(--rose-s);
+        border-color: rgba(229, 57, 53, 0.2);
+      }
+      .empty-st {
+        text-align: center;
+        padding: 24px;
+        color: var(--text3);
+        font-size: 11px;
+        border: 1.5px dashed var(--border);
+        border-radius: 10px;
+        font-family: 'Space Mono', monospace;
+        background: var(--surface2);
+      }
 
-.main{padding:26px 30px}
-.empty-sup{display:flex;flex-direction:column;align-items:center;justify-content:center;height:62vh;text-align:center;gap:14px}
-.empty-ico{font-size:52px;opacity:0.22}
-.empty-sup h2{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--text2)}
-.empty-sup p{font-size:14px;color:var(--text3);max-width:270px;line-height:1.6}
+      /* FINAL */
+      .final {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 24px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--sh);
+        position: relative;
+        overflow: hidden;
+      }
+      .final-left-bar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: 18px 0 0 18px;
+      }
+      .final-left-bar.neg {
+        background: var(--rose);
+      }
+      .final-left-bar.zer {
+        background: var(--teal);
+      }
+      .final-left-bar.pos {
+        background: var(--orange);
+      }
+      .final-lbl {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: var(--text3);
+      }
+      .final-sub {
+        font-size: 12px;
+        margin-top: 5px;
+        font-family: 'Space Mono', monospace;
+      }
+      .final-amt {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1;
+        text-align: right;
+      }
+      .final-amt.neg {
+        color: var(--rose);
+      }
+      .final-amt.zer {
+        color: var(--teal);
+      }
+      .final-amt.pos {
+        color: var(--orange);
+      }
 
-/* ── SUMMARY ── */
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:26px}
-.card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:16px;padding:18px 18px 16px;
-  box-shadow:var(--sh-sm);transition:all .18s;cursor:default;
-  position:relative;overflow:hidden;
-}
-.card:hover{transform:translateY(-3px);box-shadow:var(--sh)}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.card-ico-wrap{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px}
-.c-debt .card-ico-wrap{background:var(--rose-s)}
-.c-paid .card-ico-wrap{background:var(--teal-s)}
-.c-ret .card-ico-wrap{background:var(--violet-s)}
-.c-bal .card-ico-wrap{background:var(--orange-s)}
-.card-trend{font-size:10px;font-family:'Space Mono',monospace;padding:3px 7px;border-radius:20px;font-weight:700}
-.c-debt .card-trend{background:var(--rose-s);color:var(--rose)}
-.c-paid .card-trend{background:var(--teal-s);color:var(--teal)}
-.c-ret .card-trend{background:var(--violet-s);color:var(--violet)}
-.c-bal .card-trend{background:var(--orange-s);color:var(--orange)}
-.card-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-weight:600;margin-bottom:5px;font-family:'Space Mono',monospace}
-.card-amt{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;line-height:1}
-.c-debt .card-amt{color:var(--rose)}
-.c-paid .card-amt{color:var(--teal)}
-.c-ret .card-amt{color:var(--violet)}
-.c-bal .card-amt{color:var(--orange)}
-.card-sub{font-size:11px;color:var(--text3);margin-top:5px;font-family:'Space Mono',monospace}
-.card-bar{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 16px 16px}
-.c-debt .card-bar{background:linear-gradient(90deg,var(--rose),transparent)}
-.c-paid .card-bar{background:linear-gradient(90deg,var(--teal),transparent)}
-.c-ret .card-bar{background:linear-gradient(90deg,var(--violet),transparent)}
-.c-bal .card-bar{background:linear-gradient(90deg,var(--orange),transparent)}
+      /* DELETE MODAL */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.4);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        backdrop-filter: blur(6px);
+      }
+      .overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 34px 38px;
+        max-width: 380px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.16);
+        transform: scale(0.93) translateY(14px);
+        transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+        text-align: center;
+      }
+      .overlay.show .modal {
+        transform: scale(1) translateY(0);
+      }
+      .modal-ico {
+        font-size: 42px;
+        margin-bottom: 14px;
+        display: block;
+      }
+      .modal-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 21px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .modal-txt {
+        font-size: 14px;
+        color: var(--text2);
+        margin-bottom: 26px;
+        line-height: 1.6;
+      }
+      .modal-acts {
+        display: flex;
+        gap: 9px;
+      }
+      .modal-acts .btn {
+        padding: 11px;
+        font-size: 13px;
+      }
+      .btn-cancel {
+        background: var(--surface2);
+        color: var(--text2);
+        border: 1.5px solid var(--border);
+        box-shadow: none;
+      }
+      .btn-cancel:hover {
+        background: var(--border);
+        transform: none;
+        box-shadow: none;
+      }
 
-/* ── COLUMNS ── */
-.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:26px}
-.col-head{display:flex;align-items:center;gap:8px;margin-bottom:13px;padding-bottom:11px;border-bottom:1.5px solid var(--border)}
-.col-chip{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:6px;font-family:'Space Mono',monospace}
-.red .col-chip{background:var(--rose-s);color:var(--rose)}
-.green .col-chip{background:var(--teal-s);color:var(--teal)}
-.blue .col-chip{background:var(--violet-s);color:var(--violet)}
-.col-title{font-size:14px;font-weight:600;color:var(--text)}
+      /* EXPORT MODAL */
+      .exp-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.45);
+        z-index: 300;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        backdrop-filter: blur(6px);
+      }
+      .exp-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .exp-modal {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 22px;
+        padding: 28px 30px;
+        max-width: 460px;
+        width: 94%;
+        box-shadow: 0 24px 70px rgba(17, 24, 39, 0.18);
+        transform: scale(0.93) translateY(14px);
+        transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .exp-overlay.show .exp-modal {
+        transform: scale(1) translateY(0);
+      }
+      .exp-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .exp-sub {
+        font-size: 12px;
+        color: var(--text3);
+        margin-bottom: 18px;
+      }
+      .exp-sec-title {
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text3);
+        font-weight: 700;
+        font-family: 'Space Mono', monospace;
+        margin-bottom: 9px;
+        margin-top: 16px;
+      }
+      .check-row {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .ci {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--surface2);
+        cursor: pointer;
+        transition: all 0.14s;
+        font-size: 12px;
+        font-weight: 500;
+        user-select: none;
+      }
+      .ci:hover {
+        border-color: var(--violet);
+        background: var(--violet-s);
+        color: var(--violet);
+      }
+      .ci.on {
+        border-color: var(--violet);
+        background: var(--violet-s);
+        color: var(--violet);
+      }
+      .ci-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        border: 1.5px solid var(--border2);
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.14s;
+        flex-shrink: 0;
+        font-size: 9px;
+        font-weight: 700;
+        color: transparent;
+      }
+      .ci.on .ci-dot {
+        background: var(--violet);
+        border-color: var(--violet);
+        color: #fff;
+      }
+      .exp-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 22px;
+      }
+      .exp-actions .btn {
+        padding: 11px;
+        font-size: 13px;
+      }
+      .btn-exp {
+        background: var(--violet);
+        color: #fff;
+        box-shadow: 0 3px 12px rgba(92, 53, 217, 0.3);
+      }
+      .btn-exp:hover {
+        background: #4a27c0;
+        box-shadow: 0 5px 18px rgba(92, 53, 217, 0.4);
+        transform: translateY(-1px);
+      }
+      .btn-prnt {
+        background: var(--teal);
+        color: #fff;
+        box-shadow: 0 3px 12px rgba(13, 127, 110, 0.3);
+      }
+      .btn-prnt:hover {
+        background: #0a6457;
+        box-shadow: 0 5px 18px rgba(13, 127, 110, 0.4);
+        transform: translateY(-1px);
+      }
 
-/* ── FORM ── */
-.form{
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:14px;padding:14px;margin-bottom:11px;
-  display:flex;flex-direction:column;gap:9px;
-  box-shadow:var(--sh-sm);transition:border-color .18s,box-shadow .18s;
-}
-.form:focus-within{border-color:rgba(92,53,217,0.3);box-shadow:0 0 0 4px var(--violet-m)}
-.field label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-weight:600;margin-bottom:4px;font-family:'Space Mono',monospace}
+      /* MONTHLY SUMMARY TABLE */
+      .mon-sum {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        margin-bottom: 22px;
+        box-shadow: var(--sh-sm);
+        overflow: hidden;
+      }
+      .mon-sum-head {
+        display: grid;
+        grid-template-columns: 130px 1fr 1fr 1fr 1fr;
+        align-items: center;
+        padding: 10px 16px;
+        background: var(--surface2);
+        border-bottom: 1.5px solid var(--border);
+      }
+      .mon-sum-head span {
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-family: 'Space Mono', monospace;
+        color: var(--text3);
+        font-weight: 700;
+      }
+      .mon-sum-head span:not(:first-child) {
+        text-align: right;
+      }
+      .mon-sum-row {
+        display: grid;
+        grid-template-columns: 130px 1fr 1fr 1fr 1fr;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .mon-sum-row:last-child {
+        border-bottom: none;
+      }
+      .mon-sum-row:hover {
+        background: var(--surface2);
+      }
+      .mon-sum-row.total-row {
+        background: var(--surface2);
+        border-top: 1.5px solid var(--border2);
+      }
+      .ms-month {
+        font-size: 12px;
+        font-weight: 600;
+        font-family: 'Space Grotesk', sans-serif;
+        color: var(--text2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ms-month .ms-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: var(--border2);
+      }
+      .ms-val {
+        font-size: 12px;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        text-align: right;
+      }
+      .ms-val.debt {
+        color: var(--rose);
+      }
+      .ms-val.paid {
+        color: var(--teal);
+      }
+      .ms-val.ret {
+        color: var(--violet);
+      }
+      .ms-val.bal-neg {
+        color: var(--rose);
+      }
+      .ms-val.bal-zer {
+        color: var(--teal);
+      }
+      .ms-val.bal-pos {
+        color: var(--orange);
+      }
+      .ms-val.muted {
+        color: var(--text3);
+        font-weight: 400;
+      }
+      .mon-sum-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px 0;
+      }
+      .mon-sum-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: 'Space Mono', monospace;
+        color: var(--text3);
+      }
 
-input[type=date],input[type=number],input[type=text]{
-  width:100%;background:var(--surface2);
-  border:1.5px solid var(--border);border-radius:9px;
-  padding:9px 12px;color:var(--text);
-  font-family:'Space Mono',monospace;font-size:13px;
-  outline:none;transition:all .18s;
-}
-input::placeholder{color:var(--text3)}
-input:focus{border-color:var(--violet);background:#fff;box-shadow:0 0 0 3px var(--violet-m)}
-input[type=date]::-webkit-calendar-picker-indicator{opacity:0.4;cursor:pointer}
-
-.pay-btns{display:flex;gap:6px}
-.pay-btn{
-  flex:1;padding:9px;border:1.5px solid var(--border);border-radius:9px;
-  background:var(--surface2);color:var(--text3);
-  font-family:'Sora',sans-serif;font-size:12px;font-weight:500;
-  cursor:pointer;transition:all .16s;text-align:center;
-}
-.pay-btn:hover{border-color:rgba(13,127,110,0.3);color:var(--teal);background:var(--teal-s)}
-.pay-btn.on{background:var(--teal-s);border-color:rgba(13,127,110,0.3);color:var(--teal);font-weight:600}
-
-.btn{
-  width:100%;padding:11px;border:none;border-radius:10px;
-  font-family:'Sora',sans-serif;font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .16s;
-}
-.btn:hover{transform:translateY(-1px)}
-.btn:active{transform:none;filter:brightness(0.95)}
-.btn-red{background:var(--rose);color:#fff;box-shadow:0 3px 12px rgba(229,57,53,0.3)}
-.btn-red:hover{background:#cc2a27;box-shadow:0 5px 18px rgba(229,57,53,0.4)}
-.btn-green{background:var(--teal);color:#fff;box-shadow:0 3px 12px rgba(13,127,110,0.3)}
-.btn-green:hover{background:#0a6457;box-shadow:0 5px 18px rgba(13,127,110,0.4)}
-.btn-blue{background:var(--violet);color:#fff;box-shadow:0 3px 12px rgba(92,53,217,0.3)}
-.btn-blue:hover{background:#4a27c0;box-shadow:0 5px 18px rgba(92,53,217,0.4)}
-
-/* ── ENTRIES ── */
-.entries{display:flex;flex-direction:column;gap:5px;max-height:340px;overflow-y:auto;padding-right:2px}
-.entry{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:10px;padding:9px 12px;
-  display:grid;grid-template-columns:70px 1fr auto auto;
-  align-items:center;gap:8px;
-  animation:si .2s cubic-bezier(.22,1,.36,1);
-  transition:all .14s;box-shadow:var(--sh-sm);
-}
-.entry:hover{border-color:var(--border2);transform:translateX(3px);box-shadow:var(--sh)}
-@keyframes si{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
-.e-date{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);padding:3px 6px;border-radius:6px;text-align:center;border:1px solid var(--border);white-space:nowrap}
-.e-note{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.e-amt{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;white-space:nowrap}
-.e-amt.red{color:var(--rose)}
-.e-amt.green{color:var(--teal)}
-.e-amt.blue{color:var(--violet)}
-.del-btn{background:none;border:1.5px solid transparent;color:var(--text3);cursor:pointer;font-size:11px;padding:3px 6px;border-radius:6px;transition:all .14s;flex-shrink:0}
-.del-btn:hover{color:var(--rose);background:var(--rose-s);border-color:rgba(229,57,53,0.2)}
-.empty-st{text-align:center;padding:24px;color:var(--text3);font-size:11px;border:1.5px dashed var(--border);border-radius:10px;font-family:'Space Mono',monospace;background:var(--surface2)}
-
-/* ── FINAL ── */
-.final{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:18px;padding:24px 28px;
-  display:flex;align-items:center;justify-content:space-between;
-  box-shadow:var(--sh);position:relative;overflow:hidden;
-}
-.final-left-bar{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:18px 0 0 18px}
-.final-left-bar.neg{background:var(--rose)}
-.final-left-bar.zer{background:var(--teal)}
-.final-left-bar.pos{background:var(--orange)}
-.final-lbl{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3)}
-.final-sub{font-size:12px;margin-top:5px;font-family:'Space Mono',monospace}
-.final-amt{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;line-height:1;text-align:right}
-.final-amt.neg{color:var(--rose)}
-.final-amt.zer{color:var(--teal)}
-.final-amt.pos{color:var(--orange)}
-
-/* ── MODAL ── */
-.overlay{position:fixed;inset:0;background:rgba(17,24,39,0.4);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(6px)}
-.overlay.show{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:34px 38px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(17,24,39,0.16);transform:scale(.93) translateY(14px);transition:transform .26s cubic-bezier(.22,1,.36,1);text-align:center}
-.overlay.show .modal{transform:scale(1) translateY(0)}
-.modal-ico{font-size:42px;margin-bottom:14px;display:block}
-.modal-title{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;margin-bottom:8px;color:var(--text)}
-.modal-txt{font-size:14px;color:var(--text2);margin-bottom:26px;line-height:1.6}
-.modal-acts{display:flex;gap:9px}
-.modal-acts .btn{padding:11px;font-size:13px}
-.btn-cancel{background:var(--surface2);color:var(--text2);border:1.5px solid var(--border);box-shadow:none}
-.btn-cancel:hover{background:var(--border);transform:none;box-shadow:none}
-
-@media(max-width:1060px){.summary{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}}
-@media(max-width:720px){
-  .layout{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}
-  .sup-list{max-height:150px}.summary{grid-template-columns:1fr 1fr}
-  .main{padding:18px 14px}.final{flex-direction:column;gap:14px;text-align:center}
-  .final-amt{text-align:center}
-}
-</style>
-</head>
-<body>
-<div class="layout">
-  <aside class="sidebar">
-    <div class="sb-top">
-      <div class="logo">Borc<em>Tracker</em></div>
-      <div class="logo-sub">Maliyyə İzləyici</div>
-    </div>
-    <div class="sb-lbl">Tədarükçülər</div>
-    <div class="sup-list" id="supList"></div>
-    <div class="add-sup">
-      <input type="text" id="newSupName" placeholder="Yeni tədarükçü..." maxlength="30">
-      <button class="add-btn" onclick="addSup()">+</button>
-    </div>
-  </aside>
-  <div class="content">
-    <div class="topbar">
-      <div class="topbar-title" id="topTitle">Tədarükçü seçin</div>
-      <div class="pill zero" id="hPill">—</div>
-    </div>
-    <div class="main" id="mainContent">
-      <div class="empty-sup">
-        <div class="empty-ico">🏪</div>
-        <h2>Xoş gəldiniz</h2>
-        <p>Sol paneldən mövcud tədarükçü seçin və ya yeni əlavə edin.</p>
+      @media (max-width: 1060px) {
+        .summary {
+          grid-template-columns: 1fr 1fr;
+        }
+        .cols {
+          grid-template-columns: 1fr;
+        }
+        .mon-sum-head,
+        .mon-sum-row {
+          grid-template-columns: 110px 1fr 1fr 1fr 1fr;
+        }
+      }
+      @media (max-width: 720px) {
+        .layout {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          position: relative;
+        }
+        .sup-list {
+          max-height: 150px;
+        }
+        .summary {
+          grid-template-columns: 1fr 1fr;
+        }
+        .main {
+          padding: 18px 14px;
+        }
+        .final {
+          flex-direction: column;
+          gap: 14px;
+          text-align: center;
+        }
+        .final-amt {
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sb-top">
+          <div class="logo">Borc<em>Tracker</em></div>
+          <div class="logo-sub">Maliyyə İzləyici</div>
+        </div>
+        <div class="sb-lbl">Tədarükçülər</div>
+        <div class="sup-list" id="supList"></div>
+        <div class="add-sup">
+          <input
+            type="text"
+            id="newSupName"
+            placeholder="Yeni tədarükçü..."
+            maxlength="30"
+          />
+          <button class="add-btn" onclick="addSup()">+</button>
+        </div>
+      </aside>
+      <div class="content">
+        <div class="topbar">
+          <div class="topbar-left">
+            <div class="topbar-title" id="topTitle">Tədarükçü seçin</div>
+            <select
+              class="month-filter"
+              id="monthFilter"
+              onchange="setFilter(this.value)"
+            >
+              <option value="all">Bütün aylar</option>
+            </select>
+          </div>
+          <div class="topbar-right">
+            <button class="tb-btn" id="expBtn" onclick="openExpModal()">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              İxrac / Çap
+            </button>
+            <div class="pill zero" id="hPill">—</div>
+          </div>
+        </div>
+        <div class="main" id="mainContent">
+          <div class="empty-sup">
+            <div class="empty-ico">🏪</div>
+            <h2>Xoş gəldiniz</h2>
+            <p>Sol paneldən mövcud tədarükçü seçin və ya yeni əlavə edin.</p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <span class="modal-ico">🗑️</span>
-    <div class="modal-title">Silmək istəyirsiniz?</div>
-    <div class="modal-txt" id="modalTxt">Bu əməliyyat geri qaytarıla bilməz.</div>
-    <div class="modal-acts">
-      <button class="btn btn-cancel" onclick="closeModal()">Ləğv et</button>
-      <button class="btn btn-red" onclick="confirmDel()">Bəli, sil</button>
+    <!-- DELETE MODAL -->
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <span class="modal-ico">🗑️</span>
+        <div class="modal-title">Silmək istəyirsiniz?</div>
+        <div class="modal-txt" id="modalTxt">
+          Bu əməliyyat geri qaytarıla bilməz.
+        </div>
+        <div class="modal-acts">
+          <button class="btn btn-cancel" onclick="closeModal()">Ləğv et</button>
+          <button class="btn btn-red" onclick="confirmDel()">Bəli, sil</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<script>
-var S={suppliers:[],cur:null},PD=null;
-function load(){
-  try{var d=localStorage.getItem('bt6');if(d)S=JSON.parse(d);}catch(e){}
-  if(!S.suppliers||!S.suppliers.length)S.suppliers=[mkSup('HomeStore')];
-}
-function save(){localStorage.setItem('bt6',JSON.stringify(S));}
-function mkSup(n){return{id:Date.now()+Math.random(),name:n,debts:[],payments:[],returns:[]};}
-function getSup(id){return S.suppliers.find(function(s){return s.id==id;});}
-function today(){return new Date().toISOString().split('T')[0];}
-function fd(s){var p=s.split('-');return p[2]+'.'+p[1]+'.'+p[0];}
-function fmt(n){return n.toLocaleString('az-AZ',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₼';}
+    <!-- EXPORT MODAL -->
+    <div class="exp-overlay" id="expOverlay">
+      <div class="exp-modal">
+        <div class="exp-title">İxrac / Çap</div>
+        <div class="exp-sub">
+          Hansı məlumatları daxil etmək istədiyinizi seçin
+        </div>
+        <div class="exp-sec-title">Kateqoriya</div>
+        <div class="check-row" id="catRow"></div>
+        <div class="exp-sec-title">Aylar</div>
+        <div class="check-row" id="monRow"></div>
+        <div class="exp-actions">
+          <button
+            class="btn btn-cancel"
+            onclick="closeExpModal()"
+            style="flex: 1"
+          >
+            Ləğv et
+          </button>
+          <button class="btn btn-prnt" onclick="doPrint()" style="flex: 1">
+            🖨️ Çap et
+          </button>
+          <button class="btn btn-exp" onclick="doExport()" style="flex: 1">
+            ⬇️ CSV yüklə
+          </button>
+        </div>
+      </div>
+    </div>
 
-function addSup(){
-  var inp=document.getElementById('newSupName'),n=inp.value.trim();
-  if(!n)return;var s=mkSup(n);S.suppliers.push(s);inp.value='';
-  save();renderSidebar();selSup(s.id);
-}
-function delSupConf(id,e){
-  e.stopPropagation();var s=getSup(id);PD={sid:id,type:'supplier'};
-  document.getElementById('modalTxt').textContent='"'+s.name+'" silinəcək. Bütün məlumatlar itəcək.';
-  openModal();
-}
-function selSup(id){S.cur=id;renderSidebar();renderMain();}
+    <script>
+      var S = { suppliers: [], cur: null },
+        PD = null;
+      var filterMonth = 'all';
+      var expCat = { debt: true, paid: true, ret: true };
+      var expMon = {};
+      var openMon = {};
+      var MONTHS = [
+        'Yanvar',
+        'Fevral',
+        'Mart',
+        'Aprel',
+        'May',
+        'İyun',
+        'İyul',
+        'Avqust',
+        'Sentyabr',
+        'Oktyabr',
+        'Noyabr',
+        'Dekabr',
+      ];
 
-function renderSidebar(){
-  var el=document.getElementById('supList');
-  if(!S.suppliers.length){el.innerHTML='<div style="padding:16px;font-size:12px;color:var(--text3);text-align:center">Hələ yoxdur</div>';return;}
-  el.innerHTML=S.suppliers.map(function(s){
-    var td=s.debts.reduce(function(a,e){return a+e.amount;},0);
-    var tp=s.payments.reduce(function(a,e){return a+e.amount;},0);
-    var tr=s.returns.reduce(function(a,e){return a+e.amount;},0);
-    var net=td-tp-tr;
-    var ns=net>0.001?'color:var(--rose)':net<-0.001?'color:var(--teal)':'color:var(--text3)';
-    var nt=net>0.001?'−'+fmt(net):net<-0.001?'+'+fmt(Math.abs(net)):'0.00 ₼';
-    var ac=s.id==S.cur?' active':'';
-    return '<div class="sup-item'+ac+'" onclick="selSup('+s.id+')">'+
-      '<div class="sup-av">'+s.name.charAt(0).toUpperCase()+'</div>'+
-      '<div class="sup-info"><div class="sup-name">'+s.name+'</div><div class="sup-net" style="'+ns+'">'+nt+'</div></div>'+
-      '<button class="sup-del" onclick="delSupConf('+s.id+',event)">✕</button></div>';
-  }).join('');
-}
+      function load() {
+        try {
+          var d = localStorage.getItem('bt8');
+          if (d) S = JSON.parse(d);
+        } catch (e) {}
+        if (!S.suppliers || !S.suppliers.length)
+          S.suppliers = [mkSup('HomeStore')];
+      }
+      function save() {
+        localStorage.setItem('bt8', JSON.stringify(S));
+      }
+      function mkSup(n) {
+        return {
+          id: Date.now() + Math.random(),
+          name: n,
+          debts: [],
+          payments: [],
+          returns: [],
+        };
+      }
+      function getSup(id) {
+        return S.suppliers.find(function (s) {
+          return s.id == id;
+        });
+      }
+      function today() {
+        return new Date().toISOString().split('T')[0];
+      }
+      function fd(s) {
+        var p = s.split('-');
+        return p[2] + '.' + p[1] + '.' + p[0];
+      }
+      function fmt(n) {
+        return (
+          n.toLocaleString('az-AZ', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }) + ' ₼'
+        );
+      }
+      function mkey(d) {
+        return d.substring(0, 7);
+      }
+      function mlabel(k) {
+        var p = k.split('-');
+        return MONTHS[parseInt(p[1], 10) - 1] + ' ' + p[0];
+      }
 
-function renderMain(){
-  var s=getSup(S.cur),el=document.getElementById('mainContent');
-  var tt=document.getElementById('topTitle'),hp=document.getElementById('hPill');
-  if(!s){
-    tt.textContent='Tədarükçü seçin';hp.textContent='—';hp.className='pill zero';
-    el.innerHTML='<div class="empty-sup"><div class="empty-ico">🏪</div><h2>Xoş gəldiniz</h2><p>Sol paneldən mövcud tədarükçü seçin və ya yeni əlavə edin.</p></div>';
-    return;
-  }
-  tt.textContent=s.name;
-  var td=s.debts.reduce(function(a,e){return a+e.amount;},0);
-  var tp=s.payments.reduce(function(a,e){return a+e.amount;},0);
-  var tr=s.returns.reduce(function(a,e){return a+e.amount;},0);
-  var net=td-tp-tr;
-  if(net>0.001){hp.textContent='Borc: '+fmt(net);hp.className='pill owe';}
-  else if(net<-0.001){hp.textContent='Artıq: '+fmt(Math.abs(net));hp.className='pill clear';}
-  else{hp.textContent='Borc yoxdur ✓';hp.className='pill zero';}
-  var fc=net>0.001?'neg':net<-0.001?'pos':'zer';
-  var fsub_color=net>0.001?'var(--rose)':net<-0.001?'var(--orange)':'var(--teal)';
-  var fst=net>0.001?s.name+'-ə '+fmt(net)+' borclusunuz':net<-0.001?s.name+' sizə '+fmt(Math.abs(net))+' borcludur':'Hesab sıfırdır ✓';
-  var bsub=net>0.001?'borc var':net<-0.001?'artıq ödənilib':'bərabər';
+      function allMonths(s) {
+        var m = {};
+        s.debts.forEach(function (e) {
+          m[mkey(e.date)] = 1;
+        });
+        s.payments.forEach(function (e) {
+          m[mkey(e.date)] = 1;
+        });
+        s.returns.forEach(function (e) {
+          m[mkey(e.date)] = 1;
+        });
+        return Object.keys(m).sort();
+      }
 
-  el.innerHTML=
-    '<div class="summary">'+
-      '<div class="card c-debt"><div class="card-top"><div class="card-ico-wrap">📦</div><div class="card-trend">BORC</div></div><div class="card-lbl">Alınan mal</div><div class="card-amt">'+fmt(td)+'</div><div class="card-sub">'+s.debts.length+' əməliyyat</div><div class="card-bar"></div></div>'+
-      '<div class="card c-paid"><div class="card-top"><div class="card-ico-wrap">💳</div><div class="card-trend">ÖDƏNİŞ</div></div><div class="card-lbl">Ödədiyim</div><div class="card-amt">'+fmt(tp)+'</div><div class="card-sub">'+s.payments.length+' əməliyyat</div><div class="card-bar"></div></div>'+
-      '<div class="card c-ret"><div class="card-top"><div class="card-ico-wrap">↩️</div><div class="card-trend">QAYTARMA</div></div><div class="card-lbl">Geri qaytarma</div><div class="card-amt">'+fmt(tr)+'</div><div class="card-sub">'+s.returns.length+' əməliyyat</div><div class="card-bar"></div></div>'+
-      '<div class="card c-bal"><div class="card-top"><div class="card-ico-wrap">⚖️</div><div class="card-trend">QALıQ</div></div><div class="card-lbl">Qalıq borc</div><div class="card-amt">'+fmt(Math.abs(net))+'</div><div class="card-sub">'+bsub+'</div><div class="card-bar"></div></div>'+
-    '</div>'+
-    '<div class="cols">'+
-      col('red','📥 BORC',s.name+' göndərdi',
-        f('Tarix','<input type="date" id="dDate" value="'+today()+'">')+
-        f('Məbləğ (₼)','<input type="number" id="dAmt" placeholder="0.00" min="0" step="0.01" onwheel="this.blur()">')+
-        f('Qeyd','<input type="text" id="dNote" placeholder="Məhsul, sifariş №...">')+
-        '<button class="btn btn-red" onclick="addEntry(\'debt\')">+ Borc əlavə et</button>',
-        entries(s.debts,'debt','red'))+
-      col('green','💳 ÖDƏNİŞ','Mən ödədim',
-        f('Tarix','<input type="date" id="pDate" value="'+today()+'">')+
-        f('Məbləğ (₼)','<input type="number" id="pAmt" placeholder="0.00" min="0" step="0.01" onwheel="this.blur()">')+
-        f('Ödəniş üsulu','<div class="pay-btns"><button type="button" id="bN" class="pay-btn on" onclick="selPay(\'nagd\')">💵 Nağd</button><button type="button" id="bK" class="pay-btn" onclick="selPay(\'kart\')">💳 Kart</button></div><input type="hidden" id="pNote" value="Nağd">')+
-        '<button class="btn btn-green" onclick="addEntry(\'paid\')">+ Ödəniş əlavə et</button>',
-        entries(s.payments,'paid','green'))+
-      col('blue','↩ QAYTARMA','Geri qaytarma',
-        f('Tarix','<input type="date" id="rDate" value="'+today()+'">')+
-        f('Məbləğ (₼)','<input type="number" id="rAmt" placeholder="0.00" min="0" step="0.01" onwheel="this.blur()">')+
-        f('Səbəb','<input type="text" id="rNote" placeholder="Uyğun gəlmir, zədəli...">')+
-        '<button class="btn btn-blue" onclick="addEntry(\'return\')">↩ Geri qaytarma əlavə et</button>',
-        entries(s.returns,'return','blue'))+
-    '</div>'+
-    '<div class="final"><div class="final-left-bar '+fc+'"></div>'+
-      '<div><div class="final-lbl">Ümumi Vəziyyət</div><div class="final-sub" style="color:'+fsub_color+'">'+fst+'</div></div>'+
-      '<div><div class="final-amt '+fc+'">'+fmt(Math.abs(net))+'</div></div>'+
-    '</div>';
-}
+      /* SIDEBAR */
+      function addSup() {
+        var inp = document.getElementById('newSupName'),
+          n = inp.value.trim();
+        if (!n) return;
+        var s = mkSup(n);
+        S.suppliers.push(s);
+        inp.value = '';
+        save();
+        renderSidebar();
+        selSup(s.id);
+      }
+      function delSupConf(id, e) {
+        e.stopPropagation();
+        var s = getSup(id);
+        PD = { sid: id, type: 'supplier' };
+        document.getElementById('modalTxt').textContent =
+          '"' + s.name + '" silinəcək. Bütün məlumatlar itəcək.';
+        openModal();
+      }
+      function selSup(id) {
+        S.cur = id;
+        filterMonth = 'all';
+        renderSidebar();
+        renderMain();
+      }
 
-function f(l,i){return'<div class="field"><label>'+l+'</label>'+i+'</div>';}
-function col(color,chip,title,formHtml,entriesHtml){
-  return'<div><div class="col-head '+color+'"><div class="col-chip">'+chip+'</div><div class="col-title">'+title+'</div></div><div class="form">'+formHtml+'</div><div class="entries">'+entriesHtml+'</div></div>';
-}
-function entries(list,type,cls){
-  if(!list.length)return'<div class="empty-st">— QEYD YOXDUR —</div>';
-  return list.map(function(e){
-    return'<div class="entry"><div class="e-date">'+fd(e.date)+'</div><div class="e-note">'+(e.note||'—')+'</div><div class="e-amt '+cls+'">'+fmt(e.amount)+'</div><button class="del-btn" onclick="askDel(\''+type+'\','+e.id+')">✕</button></div>';
-  }).join('');
-}
-function addEntry(type){
-  var s=getSup(S.cur);if(!s)return;
-  var date,amount,note;
-  if(type==='debt'){date=document.getElementById('dDate').value;amount=parseFloat(document.getElementById('dAmt').value);note=document.getElementById('dNote').value.trim();}
-  else if(type==='paid'){date=document.getElementById('pDate').value;amount=parseFloat(document.getElementById('pAmt').value);note=document.getElementById('pNote').value;}
-  else{date=document.getElementById('rDate').value;amount=parseFloat(document.getElementById('rAmt').value);note=document.getElementById('rNote').value.trim();}
-  if(!date){alert('Tarix seçin');return;}
-  if(!amount||amount<=0){alert('Düzgün məbləğ daxil edin');return;}
-  var entry={id:Date.now(),date:date,amount:amount,note:note};
-  if(type==='debt'){s.debts.push(entry);s.debts.sort(function(a,b){return a.date.localeCompare(b.date);});}
-  else if(type==='paid'){s.payments.push(entry);s.payments.sort(function(a,b){return a.date.localeCompare(b.date);});}
-  else{s.returns.push(entry);s.returns.sort(function(a,b){return a.date.localeCompare(b.date);});}
-  save();renderSidebar();renderMain();
-}
-function selPay(m){
-  document.getElementById('pNote').value=m==='nagd'?'Nağd':'Kart';
-  document.getElementById('bN').className='pay-btn'+(m==='nagd'?' on':'');
-  document.getElementById('bK').className='pay-btn'+(m==='kart'?' on':'');
-}
-function askDel(type,eid){
-  PD={sid:S.cur,type:type,eid:eid};
-  var lb={debt:'borc',paid:'ödəniş',return:'geri qaytarma'};
-  document.getElementById('modalTxt').textContent='Bu '+lb[type]+' qeydi həmişəlik silinəcək.';
-  openModal();
-}
-function confirmDel(){
-  if(!PD){closeModal();return;}
-  if(PD.type==='supplier'){
-    S.suppliers=S.suppliers.filter(function(s){return s.id!=PD.sid;});
-    if(S.cur==PD.sid)S.cur=null;
-  }else{
-    var s=getSup(PD.sid);
-    if(s){
-      if(PD.type==='debt')s.debts=s.debts.filter(function(e){return e.id!=PD.eid;});
-      else if(PD.type==='paid')s.payments=s.payments.filter(function(e){return e.id!=PD.eid;});
-      else if(PD.type==='return')s.returns=s.returns.filter(function(e){return e.id!=PD.eid;});
-    }
-  }
-  PD=null;save();closeModal();renderSidebar();renderMain();
-}
-function openModal(){document.getElementById('overlay').classList.add('show');}
-function closeModal(){document.getElementById('overlay').classList.remove('show');PD=null;}
-document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
-document.getElementById('newSupName').addEventListener('keydown',function(e){if(e.key==='Enter')addSup();});
-load();renderSidebar();
-if(S.suppliers.length)selSup(S.suppliers[0].id);
-</script>
-</body>
+      function renderSidebar() {
+        var el = document.getElementById('supList');
+        if (!S.suppliers.length) {
+          el.innerHTML =
+            '<div style="padding:16px;font-size:12px;color:var(--text3);text-align:center">Hələ yoxdur</div>';
+          return;
+        }
+        el.innerHTML = S.suppliers
+          .map(function (s) {
+            var td = s.debts.reduce(function (a, e) {
+              return a + e.amount;
+            }, 0);
+            var tp = s.payments.reduce(function (a, e) {
+              return a + e.amount;
+            }, 0);
+            var tr = s.returns.reduce(function (a, e) {
+              return a + e.amount;
+            }, 0);
+            var net = td - tp - tr;
+            var ns =
+              net > 0.001
+                ? 'color:var(--rose)'
+                : net < -0.001
+                  ? 'color:var(--teal)'
+                  : 'color:var(--text3)';
+            var nt =
+              net > 0.001
+                ? '−' + fmt(net)
+                : net < -0.001
+                  ? '+' + fmt(Math.abs(net))
+                  : '0.00 ₼';
+            var ac = s.id == S.cur ? ' active' : '';
+            return (
+              '<div class="sup-item' +
+              ac +
+              '" onclick="selSup(' +
+              s.id +
+              ')">' +
+              '<div class="sup-av">' +
+              s.name.charAt(0).toUpperCase() +
+              '</div>' +
+              '<div class="sup-info"><div class="sup-name">' +
+              s.name +
+              '</div><div class="sup-net" style="' +
+              ns +
+              '">' +
+              nt +
+              '</div></div>' +
+              '<button class="sup-del" onclick="delSupConf(' +
+              s.id +
+              ',event)">✕</button></div>'
+            );
+          })
+          .join('');
+      }
+
+      function setFilter(v) {
+        filterMonth = v;
+        renderMain();
+      }
+
+      /* MAIN */
+      function renderMain() {
+        var s = getSup(S.cur),
+          el = document.getElementById('mainContent');
+        var tt = document.getElementById('topTitle'),
+          hp = document.getElementById('hPill');
+        var mf = document.getElementById('monthFilter'),
+          eb = document.getElementById('expBtn');
+        if (!s) {
+          tt.textContent = 'Tədarükçü seçin';
+          hp.textContent = '—';
+          hp.className = 'pill zero';
+          mf.style.display = 'none';
+          eb.style.display = 'none';
+          el.innerHTML =
+            '<div class="empty-sup"><div class="empty-ico">🏪</div><h2>Xoş gəldiniz</h2><p>Sol paneldən mövcud tədarükçü seçin və ya yeni əlavə edin.</p></div>';
+          return;
+        }
+        tt.textContent = s.name;
+        eb.style.display = 'flex';
+
+        // build month filter options
+        var months = allMonths(s);
+        var curOpts =
+          '<option value="all"' +
+          (filterMonth === 'all' ? ' selected' : '') +
+          '>Bütün aylar</option>' +
+          months
+            .map(function (m) {
+              return (
+                '<option value="' +
+                m +
+                '"' +
+                (filterMonth === m ? ' selected' : '') +
+                '>' +
+                mlabel(m) +
+                '</option>'
+              );
+            })
+            .join('');
+        mf.innerHTML = curOpts;
+        mf.style.display = months.length > 0 ? 'block' : 'none';
+
+        var td = s.debts.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var tp = s.payments.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var tr = s.returns.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var net = td - tp - tr;
+        if (net > 0.001) {
+          hp.textContent = 'Borc: ' + fmt(net);
+          hp.className = 'pill owe';
+        } else if (net < -0.001) {
+          hp.textContent = 'Artıq: ' + fmt(Math.abs(net));
+          hp.className = 'pill clear';
+        } else {
+          hp.textContent = 'Borc yoxdur ✓';
+          hp.className = 'pill zero';
+        }
+
+        var fc = net > 0.001 ? 'neg' : net < -0.001 ? 'pos' : 'zer';
+        var fcolor =
+          net > 0.001
+            ? 'var(--rose)'
+            : net < -0.001
+              ? 'var(--orange)'
+              : 'var(--teal)';
+        var fst =
+          net > 0.001
+            ? s.name + '-ə ' + fmt(net) + ' borclusunuz'
+            : net < -0.001
+              ? s.name + ' sizə ' + fmt(Math.abs(net)) + ' borcludur'
+              : 'Hesab sıfırdır ✓';
+        var bsub =
+          net > 0.001
+            ? 'borc var'
+            : net < -0.001
+              ? 'artıq ödənilib'
+              : 'bərabər';
+
+        // filtered lists for display
+        var dList =
+          filterMonth === 'all'
+            ? s.debts
+            : s.debts.filter(function (e) {
+                return mkey(e.date) === filterMonth;
+              });
+        var pList =
+          filterMonth === 'all'
+            ? s.payments
+            : s.payments.filter(function (e) {
+                return mkey(e.date) === filterMonth;
+              });
+        var rList =
+          filterMonth === 'all'
+            ? s.returns
+            : s.returns.filter(function (e) {
+                return mkey(e.date) === filterMonth;
+              });
+
+        el.innerHTML =
+          '<div class="summary">' +
+          '<div class="card c-debt"><div class="card-top"><div class="card-ico-wrap">📦</div><div class="card-trend">BORC</div></div><div class="card-lbl">Alınan mal</div><div class="card-amt">' +
+          fmt(td) +
+          '</div><div class="card-sub">' +
+          s.debts.length +
+          ' əməliyyat</div><div class="card-bar"></div></div>' +
+          '<div class="card c-paid"><div class="card-top"><div class="card-ico-wrap">💳</div><div class="card-trend">ÖDƏNİŞ</div></div><div class="card-lbl">Ödədiyim</div><div class="card-amt">' +
+          fmt(tp) +
+          '</div><div class="card-sub">' +
+          s.payments.length +
+          ' əməliyyat</div><div class="card-bar"></div></div>' +
+          '<div class="card c-ret"><div class="card-top"><div class="card-ico-wrap">↩️</div><div class="card-trend">QAYTARMA</div></div><div class="card-lbl">Geri qaytarma</div><div class="card-amt">' +
+          fmt(tr) +
+          '</div><div class="card-sub">' +
+          s.returns.length +
+          ' əməliyyat</div><div class="card-bar"></div></div>' +
+          '<div class="card c-bal"><div class="card-top"><div class="card-ico-wrap">⚖️</div><div class="card-trend">QALıQ</div></div><div class="card-lbl">Qalıq borc</div><div class="card-amt">' +
+          fmt(Math.abs(net)) +
+          '</div><div class="card-sub">' +
+          bsub +
+          '</div><div class="card-bar"></div></div>' +
+          '</div>' +
+          buildMonSummary(s) +
+          '<div class="cols">' +
+          col(
+            'red',
+            '📥 BORC',
+            s.name + ' göndərdi',
+            f(
+              'Tarix',
+              '<input type="date" id="dDate" value="' + today() + '">',
+            ) +
+              f(
+                'Məbləğ (₼)',
+                '<input type="number" id="dAmt" placeholder="0.00" min="0" step="0.01" onwheel="this.blur()">',
+              ) +
+              f(
+                'Qeyd',
+                '<input type="text" id="dNote" placeholder="Məhsul, sifariş №...">',
+              ) +
+              '<button class="btn btn-red" onclick="addEntry(\'debt\')">+ Borc əlavə et</button>',
+            byMonth(dList, 'debt', 'red'),
+          ) +
+          col(
+            'green',
+            '💳 ÖDƏNİŞ',
+            'Mən ödədim',
+            f(
+              'Tarix',
+              '<input type="date" id="pDate" value="' + today() + '">',
+            ) +
+              f(
+                'Məbləğ (₼)',
+                '<input type="number" id="pAmt" placeholder="0.00" min="0" step="0.01" onwheel="this.blur()">',
+              ) +
+              f(
+                'Ödəniş üsulu',
+                '<div class="pay-btns"><button type="button" id="bN" class="pay-btn on" onclick="selPay(\'nagd\')">💵 Nağd</button><button type="button" id="bK" class="pay-btn" onclick="selPay(\'kart\')">💳 Kart</button></div><input type="hidden" id="pNote" value="Nağd">',
+              ) +
+              '<button class="btn btn-green" onclick="addEntry(\'paid\')">+ Ödəniş əlavə et</button>',
+            byMonth(pList, 'paid', 'green'),
+          ) +
+          col(
+            'blue',
+            '↩ QAYTARMA',
+            'Geri qaytarma',
+            f(
+              'Tarix',
+              '<input type="date" id="rDate" value="' + today() + '">',
+            ) +
+              f(
+                'Məbləğ (₼)',
+                '<input type="number" id="rAmt" placeholder="0.00" min="0" step="0.01" onwheel="this.blur()">',
+              ) +
+              f(
+                'Səbəb',
+                '<input type="text" id="rNote" placeholder="Uyğun gəlmir, zədəli...">',
+              ) +
+              '<button class="btn btn-blue" onclick="addEntry(\'return\')">↩ Geri qaytarma əlavə et</button>',
+            byMonth(rList, 'return', 'blue'),
+          ) +
+          '</div>' +
+          '<div class="final"><div class="final-left-bar ' +
+          fc +
+          '"></div>' +
+          '<div><div class="final-lbl">Ümumi Vəziyyət</div><div class="final-sub" style="color:' +
+          fcolor +
+          '">' +
+          fst +
+          '</div></div>' +
+          '<div><div class="final-amt ' +
+          fc +
+          '">' +
+          fmt(Math.abs(net)) +
+          '</div></div>' +
+          '</div>';
+      }
+
+      /* GROUP BY MONTH */
+      function byMonth(list, type, cls) {
+        if (!list.length) return '<div class="empty-st">— QEYD YOXDUR —</div>';
+        var g = {};
+        list.forEach(function (e) {
+          var k = mkey(e.date);
+          if (!g[k]) g[k] = [];
+          g[k].push(e);
+        });
+        var keys = Object.keys(g).sort().reverse();
+        return keys
+          .map(function (k, i) {
+            var items = g[k];
+            var sum = items.reduce(function (a, e) {
+              return a + e.amount;
+            }, 0);
+            var gid = 'mg_' + type + '_' + k.replace('-', '_');
+            var isOpen = openMon[gid] !== undefined ? openMon[gid] : i === 0;
+            return (
+              '<div class="month-group">' +
+              '<div class="month-toggle" onclick="togMon(\'' +
+              gid +
+              '\')">' +
+              '<div class="month-toggle-left">' +
+              '<span class="month-name">📅 ' +
+              mlabel(k) +
+              '</span>' +
+              '<span class="month-meta">' +
+              fmt(sum) +
+              ' · ' +
+              items.length +
+              ' qeyd</span>' +
+              '</div>' +
+              '<span class="month-arrow' +
+              (isOpen ? ' open' : '') +
+              '" id="arr_' +
+              gid +
+              '">▾</span>' +
+              '</div>' +
+              '<div class="month-body" id="' +
+              gid +
+              '" style="display:' +
+              (isOpen ? 'flex' : 'none') +
+              '">' +
+              items
+                .map(function (e) {
+                  return (
+                    '<div class="entry"><div class="e-date">' +
+                    fd(e.date) +
+                    '</div><div class="e-note">' +
+                    (e.note || '—') +
+                    '</div><div class="e-amt ' +
+                    cls +
+                    '">' +
+                    fmt(e.amount) +
+                    '</div><button class="del-btn" onclick="askDel(\'' +
+                    type +
+                    "'," +
+                    e.id +
+                    ')">✕</button></div>'
+                  );
+                })
+                .join('') +
+              '</div>' +
+              '</div>'
+            );
+          })
+          .join('');
+      }
+
+      function togMon(gid) {
+        var el = document.getElementById(gid),
+          arr = document.getElementById('arr_' + gid);
+        if (!el) return;
+        var open = el.style.display !== 'none';
+        openMon[gid] = !open;
+        el.style.display = open ? 'none' : 'flex';
+        el.style.flexDirection = 'column';
+        el.style.gap = '5px';
+        if (arr) arr.className = 'month-arrow' + (open ? '' : ' open');
+      }
+
+      function buildMonSummary(s) {
+        var months = allMonths(s);
+        if (!months.length) return '';
+        var rows = months
+          .map(function (mk) {
+            var d = s.debts
+              .filter(function (e) {
+                return mkey(e.date) === mk;
+              })
+              .reduce(function (a, e) {
+                return a + e.amount;
+              }, 0);
+            var p = s.payments
+              .filter(function (e) {
+                return mkey(e.date) === mk;
+              })
+              .reduce(function (a, e) {
+                return a + e.amount;
+              }, 0);
+            var r = s.returns
+              .filter(function (e) {
+                return mkey(e.date) === mk;
+              })
+              .reduce(function (a, e) {
+                return a + e.amount;
+              }, 0);
+            var bal = d - p - r;
+            var balCls =
+              bal > 0.001 ? 'bal-neg' : bal < -0.001 ? 'bal-pos' : 'bal-zer';
+            var balStr =
+              bal > 0.001
+                ? '−' + fmt(bal)
+                : bal < -0.001
+                  ? '+' + fmt(Math.abs(bal))
+                  : fmt(0);
+            var isActive = filterMonth === mk;
+            return (
+              '<div class="mon-sum-row' +
+              (isActive ? ' active-mon-row' : '') +
+              '" style="' +
+              (isActive ? 'background:var(--violet-s);' : '') +
+              '" onclick="setFilter(\'' +
+              mk +
+              '\')" title="Bu ayı filtrele" >' +
+              '<div class="ms-month"><div class="ms-dot" style="background:' +
+              (d > 0 ? 'var(--rose)' : 'var(--border2)') +
+              '"></div>' +
+              mlabel(mk) +
+              '</div>' +
+              '<div class="ms-val debt">' +
+              (d > 0 ? fmt(d) : '<span class="ms-val muted">—</span>') +
+              '</div>' +
+              '<div class="ms-val paid">' +
+              (p > 0 ? fmt(p) : '<span class="ms-val muted">—</span>') +
+              '</div>' +
+              '<div class="ms-val ret">' +
+              (r > 0 ? fmt(r) : '<span class="ms-val muted">—</span>') +
+              '</div>' +
+              '<div class="ms-val ' +
+              balCls +
+              '">' +
+              balStr +
+              '</div>' +
+              '</div>'
+            );
+          })
+          .join('');
+
+        // totals row
+        var totD = s.debts.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var totP = s.payments.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var totR = s.returns.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var totBal = totD - totP - totR;
+        var totBalCls =
+          totBal > 0.001 ? 'bal-neg' : totBal < -0.001 ? 'bal-pos' : 'bal-zer';
+        var totBalStr =
+          totBal > 0.001
+            ? '−' + fmt(totBal)
+            : totBal < -0.001
+              ? '+' + fmt(Math.abs(totBal))
+              : fmt(0);
+
+        var resetBtn =
+          filterMonth !== 'all'
+            ? '<button onclick="setFilter(\'all\')" style="font-size:10px;font-family:Sora,sans-serif;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--violet);background:var(--violet-s);color:var(--violet);cursor:pointer">✕ Filtri sıfırla</button>'
+            : '';
+
+        return (
+          '<div class="mon-sum">' +
+          '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between">' +
+          '<span class="mon-sum-label">📊 Aylıq xülasə</span>' +
+          resetBtn +
+          '</div>' +
+          '<div class="mon-sum-head">' +
+          '<span>Ay</span><span>Borc</span><span>Ödəniş</span><span>Qaytarma</span><span>Qalıq</span>' +
+          '</div>' +
+          rows +
+          '<div class="mon-sum-row total-row">' +
+          '<div class="ms-month" style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text3)">Ümumi cəm</div>' +
+          '<div class="ms-val debt">' +
+          fmt(totD) +
+          '</div>' +
+          '<div class="ms-val paid">' +
+          fmt(totP) +
+          '</div>' +
+          '<div class="ms-val ret">' +
+          fmt(totR) +
+          '</div>' +
+          '<div class="ms-val ' +
+          totBalCls +
+          '">' +
+          totBalStr +
+          '</div>' +
+          '</div>' +
+          '</div>'
+        );
+      }
+
+      function f(l, i) {
+        return '<div class="field"><label>' + l + '</label>' + i + '</div>';
+      }
+      function col(c, chip, title, formH, entH) {
+        return (
+          '<div><div class="col-head ' +
+          c +
+          '"><div class="col-chip">' +
+          chip +
+          '</div><div class="col-title">' +
+          title +
+          '</div></div><div class="form">' +
+          formH +
+          '</div>' +
+          entH +
+          '</div>'
+        );
+      }
+
+      /* ADD */
+      function addEntry(type) {
+        var s = getSup(S.cur);
+        if (!s) return;
+        var date, amount, note;
+        if (type === 'debt') {
+          date = document.getElementById('dDate').value;
+          amount = parseFloat(document.getElementById('dAmt').value);
+          note = document.getElementById('dNote').value.trim();
+        } else if (type === 'paid') {
+          date = document.getElementById('pDate').value;
+          amount = parseFloat(document.getElementById('pAmt').value);
+          note = document.getElementById('pNote').value;
+        } else {
+          date = document.getElementById('rDate').value;
+          amount = parseFloat(document.getElementById('rAmt').value);
+          note = document.getElementById('rNote').value.trim();
+        }
+        if (!date) {
+          alert('Tarix seçin');
+          return;
+        }
+        if (!amount || amount <= 0) {
+          alert('Düzgün məbləğ daxil edin');
+          return;
+        }
+        var entry = { id: Date.now(), date: date, amount: amount, note: note };
+        if (type === 'debt') {
+          s.debts.push(entry);
+          s.debts.sort(function (a, b) {
+            return a.date.localeCompare(b.date);
+          });
+        } else if (type === 'paid') {
+          s.payments.push(entry);
+          s.payments.sort(function (a, b) {
+            return a.date.localeCompare(b.date);
+          });
+        } else {
+          s.returns.push(entry);
+          s.returns.sort(function (a, b) {
+            return a.date.localeCompare(b.date);
+          });
+        }
+        save();
+        renderSidebar();
+        renderMain();
+      }
+
+      function selPay(m) {
+        document.getElementById('pNote').value = m === 'nagd' ? 'Nağd' : 'Kart';
+        document.getElementById('bN').className =
+          'pay-btn' + (m === 'nagd' ? ' on' : '');
+        document.getElementById('bK').className =
+          'pay-btn' + (m === 'kart' ? ' on' : '');
+      }
+
+      /* DELETE */
+      function askDel(type, eid) {
+        PD = { sid: S.cur, type: type, eid: eid };
+        var lb = { debt: 'borc', paid: 'ödəniş', return: 'geri qaytarma' };
+        document.getElementById('modalTxt').textContent =
+          'Bu ' + lb[type] + ' qeydi həmişəlik silinəcək.';
+        openModal();
+      }
+      function confirmDel() {
+        if (!PD) {
+          closeModal();
+          return;
+        }
+        if (PD.type === 'supplier') {
+          S.suppliers = S.suppliers.filter(function (s) {
+            return s.id != PD.sid;
+          });
+          if (S.cur == PD.sid) S.cur = null;
+        } else {
+          var s = getSup(PD.sid);
+          if (s) {
+            if (PD.type === 'debt')
+              s.debts = s.debts.filter(function (e) {
+                return e.id != PD.eid;
+              });
+            else if (PD.type === 'paid')
+              s.payments = s.payments.filter(function (e) {
+                return e.id != PD.eid;
+              });
+            else if (PD.type === 'return')
+              s.returns = s.returns.filter(function (e) {
+                return e.id != PD.eid;
+              });
+          }
+        }
+        PD = null;
+        save();
+        closeModal();
+        renderSidebar();
+        renderMain();
+      }
+      function openModal() {
+        document.getElementById('overlay').classList.add('show');
+      }
+      function closeModal() {
+        document.getElementById('overlay').classList.remove('show');
+        PD = null;
+      }
+      document
+        .getElementById('overlay')
+        .addEventListener('click', function (e) {
+          if (e.target === this) closeModal();
+        });
+
+      /* EXPORT MODAL */
+      function openExpModal() {
+        var s = getSup(S.cur);
+        if (!s) return;
+        var months = allMonths(s);
+        months.forEach(function (m) {
+          if (expMon[m] === undefined) expMon[m] = true;
+        });
+
+        document.getElementById('catRow').innerHTML = [
+          { k: 'debt', l: '📦 Borc' },
+          { k: 'paid', l: '💳 Ödəniş' },
+          { k: 'ret', l: '↩️ Qaytarma' },
+        ]
+          .map(function (c) {
+            var on = expCat[c.k] ? ' on' : '';
+            return (
+              '<div class="ci' +
+              on +
+              '" onclick="togCat(\'' +
+              c.k +
+              '\',this)"><div class="ci-dot">✓</div>' +
+              c.l +
+              '</div>'
+            );
+          })
+          .join('');
+
+        document.getElementById('monRow').innerHTML = months
+          .map(function (m) {
+            var on = expMon[m] ? ' on' : '';
+            return (
+              '<div class="ci' +
+              on +
+              '" onclick="togMon2(\'' +
+              m +
+              '\',this)"><div class="ci-dot">✓</div>' +
+              mlabel(m) +
+              '</div>'
+            );
+          })
+          .join('');
+
+        document.getElementById('expOverlay').classList.add('show');
+      }
+      function closeExpModal() {
+        document.getElementById('expOverlay').classList.remove('show');
+      }
+      document
+        .getElementById('expOverlay')
+        .addEventListener('click', function (e) {
+          if (e.target === this) closeExpModal();
+        });
+
+      function togCat(k, el) {
+        expCat[k] = !expCat[k];
+        el.className = 'ci' + (expCat[k] ? ' on' : '');
+      }
+      function togMon2(m, el) {
+        expMon[m] = !expMon[m];
+        el.className = 'ci' + (expMon[m] ? ' on' : '');
+      }
+
+      function getRows() {
+        var s = getSup(S.cur);
+        if (!s) return [];
+        var selM = Object.keys(expMon).filter(function (m) {
+          return expMon[m];
+        });
+        var rows = [];
+        function pick(list, cat) {
+          list.forEach(function (e) {
+            if (selM.indexOf(mkey(e.date)) >= 0)
+              rows.push({
+                date: e.date,
+                cat: cat,
+                note: e.note || '',
+                amount: e.amount,
+                mk: mkey(e.date),
+              });
+          });
+        }
+        if (expCat.debt) pick(s.debts, 'Borc');
+        if (expCat.paid) pick(s.payments, 'Ödəniş');
+        if (expCat.ret) pick(s.returns, 'Qaytarma');
+        rows.sort(function (a, b) {
+          return a.date.localeCompare(b.date);
+        });
+        return rows;
+      }
+
+      function doExport() {
+        var rows = getRows();
+        if (!rows.length) {
+          alert('Seçilmiş filtrlərə uyğun məlumat yoxdur.');
+          return;
+        }
+        var s = getSup(S.cur);
+        var csv = 'Tarix,Kateqoriya,Qeyd,Məbləğ (₼)\n';
+        rows.forEach(function (r) {
+          csv +=
+            fd(r.date) +
+            ',' +
+            r.cat +
+            ',"' +
+            r.note.replace(/"/g, '""') +
+            '",' +
+            r.amount.toFixed(2) +
+            '\n';
+        });
+        var blob = new Blob(['\uFEFF' + csv], {
+          type: 'text/csv;charset=utf-8',
+        });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'BorcTracker_' + s.name + '_' + today() + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        closeExpModal();
+      }
+
+      function doPrint() {
+        var rows = getRows();
+        if (!rows.length) {
+          alert('Seçilmiş filtrlərə uyğun məlumat yoxdur.');
+          return;
+        }
+        var s = getSup(S.cur);
+        var td = s.debts.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var tp = s.payments.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var tr = s.returns.reduce(function (a, e) {
+          return a + e.amount;
+        }, 0);
+        var net = td - tp - tr;
+        var g = {};
+        rows.forEach(function (r) {
+          if (!g[r.mk]) g[r.mk] = [];
+          g[r.mk].push(r);
+        });
+        var keys = Object.keys(g).sort();
+        var selM = Object.keys(expMon).filter(function (m) {
+          return expMon[m];
+        });
+
+        var html =
+          '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BorcTracker — ' +
+          s.name +
+          '</title>' +
+          '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:24px;color:#111;font-size:13px}' +
+          'h1{font-size:20px;font-weight:700;margin-bottom:4px}' +
+          '.meta{color:#666;font-size:12px;margin-bottom:20px}' +
+          '.cards{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}' +
+          '.c{border:1px solid #ddd;border-radius:8px;padding:12px 16px;min-width:130px}' +
+          '.c-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin-bottom:4px}' +
+          '.c-val{font-size:20px;font-weight:700}' +
+          '.c.d .c-val{color:#e53935}.c.p .c-val{color:#0d7f6e}.c.r .c-val{color:#5c35d9}.c.b .c-val{color:' +
+          (net > 0 ? '#e53935' : net < 0 ? '#d06b00' : '#0d7f6e') +
+          '}' +
+          '.mb{margin-bottom:20px}' +
+          '.mh{background:#f2f4f8;border:1px solid #e3e7f0;border-radius:6px;padding:8px 14px;font-weight:700;font-size:13px;margin-bottom:8px;display:flex;justify-content:space-between}' +
+          'table{width:100%;border-collapse:collapse}' +
+          'th{text-align:left;padding:7px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;border-bottom:2px solid #e3e7f0;background:#f8f9fc}' +
+          'td{padding:7px 10px;border-bottom:1px solid #f0f0f0;font-size:12px}' +
+          'tr:last-child td{border-bottom:none}' +
+          '.cd{color:#e53935;font-weight:700}.cp{color:#0d7f6e;font-weight:700}.cr{color:#5c35d9;font-weight:700}' +
+          '.ft{margin-top:24px;border-top:2px solid #111;padding-top:14px;display:flex;justify-content:space-between;align-items:baseline}' +
+          '.ft-l{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px}' +
+          '.ft-v{font-size:30px;font-weight:700;color:' +
+          (net > 0 ? '#e53935' : net < 0 ? '#d06b00' : '#0d7f6e') +
+          '}' +
+          '@media print{body{padding:12px}}</style></head><body>' +
+          '<h1>BorcTracker — ' +
+          s.name +
+          '</h1>' +
+          '<div class="meta">Çap tarixi: ' +
+          new Date().toLocaleDateString('az-AZ') +
+          ' | Aylar: ' +
+          selM.map(mlabel).join(', ') +
+          '</div>' +
+          '<div class="cards">' +
+          '<div class="c d"><div class="c-lbl">Alınan mal</div><div class="c-val">' +
+          fmt(td) +
+          '</div></div>' +
+          '<div class="c p"><div class="c-lbl">Ödədiyim</div><div class="c-val">' +
+          fmt(tp) +
+          '</div></div>' +
+          '<div class="c r"><div class="c-lbl">Qaytarma</div><div class="c-val">' +
+          fmt(tr) +
+          '</div></div>' +
+          '<div class="c b"><div class="c-lbl">Qalıq borc</div><div class="c-val">' +
+          fmt(Math.abs(net)) +
+          '</div></div>' +
+          '</div>';
+
+        keys.forEach(function (k) {
+          var items = g[k];
+          var msum = items.reduce(function (a, r) {
+            return a + r.amount;
+          }, 0);
+          html +=
+            '<div class="mb"><div class="mh"><span>📅 ' +
+            mlabel(k) +
+            '</span><span>Cəm: ' +
+            fmt(msum) +
+            '</span></div>' +
+            '<table><tr><th>Tarix</th><th>Kateqoriya</th><th>Qeyd</th><th style="text-align:right">Məbləğ</th></tr>' +
+            items
+              .map(function (r) {
+                var cc =
+                  r.cat === 'Borc' ? 'cd' : r.cat === 'Ödəniş' ? 'cp' : 'cr';
+                return (
+                  '<tr><td>' +
+                  fd(r.date) +
+                  '</td><td class="' +
+                  cc +
+                  '">' +
+                  r.cat +
+                  '</td><td>' +
+                  r.note +
+                  '</td><td style="text-align:right;font-weight:700">' +
+                  fmt(r.amount) +
+                  '</td></tr>'
+                );
+              })
+              .join('') +
+            '</table></div>';
+        });
+
+        html +=
+          '<div class="ft"><div class="ft-l">Ümumi qalıq borc</div><div class="ft-v">' +
+          fmt(Math.abs(net)) +
+          (net > 0 ? ' (borc)' : net < 0 ? ' (artıq)' : ' ✓') +
+          '</div></div>' +
+          '</body></html>';
+
+        var w = window.open('', '_blank', 'width=860,height=680');
+        w.document.write(html);
+        w.document.close();
+        w.focus();
+        setTimeout(function () {
+          w.print();
+        }, 350);
+        closeExpModal();
+      }
+
+      document
+        .getElementById('newSupName')
+        .addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') addSup();
+        });
+      load();
+      renderSidebar();
+      if (S.suppliers.length) selSup(S.suppliers[0].id);
+    </script>
+  </body>
 </html>
